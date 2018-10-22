@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metro Bike Share Data Analysis</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+  <script src="./main.js"></script>
+  <!-- <link rel="stylesheet" href="styles/debug.css"> -->
+  <style>
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .is-paddingless-horizontal {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: [xl-start] 1fr 1.5rem [md-start] minmax(0, 624px) [md-end] 1.5rem 1fr [xl-end];
+    }
+
+    .grid * {
+      grid-column: md;
+    }
+
+    .grid-xl {
+      grid-column: xl;
+    }
+
+    .hidden {
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .overlay {
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), white 100%);
+      position: absolute;
+      top: 100px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .showMoreButton {
+      text-align: center;
+      margin-right: 30px;
+      font-size: 80%;
+      color: rgba(54, 162, 235, 1) !important;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .spacer {
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 672px) {
+      :root {
+        font-size: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- .section -->
+  <section class="section is-paddingless-horizontal">
+    <div class="container grid" style="max-width: 1024px;">
+
+      <!-- .media -->
+      <article class="media center">
+        <figure class="media-left">
+          <span class="image is-64x64">
+            <img src="./Files/profile.png">
+          </span>
+        </figure>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong>Shreyas Amargol</strong>
+              <a href="https://github.com/amargol" target="_blank">(Github)</a>
+              <br>
+              <span class="has-text-grey">Capital One SES challenge
+                <br>
+                <time datetime="2018-04-20">October 21</time>
+              </span>
+            </p>
+          </div>
+        </div>
+      </article>
+      <!-- /.media -->
+
+      <!-- .section -->
+      <div class="section is-paddingless-horizontal">
+        <h1 class="title is-2">
+          Analysis of Metro Bike Share Data
+        </h1>
+        <h2 class="subtitle is-3 has-text-grey-light">
+          How does Los Angeles ride?
+        </h2>
+      </div>
+      <!-- /.section -->
+
+      <div class="content is-medium">
+        <p>
+          This is an interactive case study of Metro Bike Share Data. You can hover over the bars to find out more detailed information
+          and click "show more" to expand the graphs. You can find the source code on <a href="https://github.com/Amargol/Capital-One-SES">Github</a>. I hope you enjoy.
+        </p>
+      </div>
+
+      <div class="content is-medium">
+        <p>
+          <strong>Most Popular Starting Stations (By Station ID)</strong>
+        </p>
+
+        <div class="hidden">
+          <canvas id="myChart" width="400" height="900" aria-label="lbl" role="img">
+            <p>Your browser does not support HTML canvas</p>
+          </canvas>
+          <div class="overlay"></div>
+        </div>
+        <p class="showMoreButton" onclick="show(0, this)">Click to show more</p>
+        <p>The most popular starting stations have a standard deviation of 1398 and an average of 1976.</p>
+        <div class="spacer"></div>
+
+        <p>
+          <strong>Most Popular Ending Stations (By Station ID)</strong>
+        </p>
+
+        <div class="hidden">
+          <canvas id="myChart1" width="400" height="900" aria-label="lbl" role="img">
+            <p>Your browser does not support HTML canvas</p>
+          </canvas>
+          <div class="overlay"></div>
+        </div>
+        <p class="showMoreButton" onclick="show(1, this)">Click to show more</p>
+        <p>The most popular ending stations have a standard deviation of 1526 and an average of 1975. The average number of
+          bikes checked in is slightly smaller because bikes may be lost or broken.</p>
+        <div class="spacer"></div>
+
+        <p>
+          <strong>Average Discrepancy Per Day</strong>
+        </p>
+
+        <div class="hidden">
+          <canvas id="myChart2" width="400" height="900" aria-label="lbl" role="img">
+            <p>Your browser does not support HTML canvas</p>
+          </canvas>
+          <div class="overlay"></div>
+        </div>
+        <p class="showMoreButton" onclick="show(2, this)">Click to show more</p>
+        <p>This graph shows the difference between bikes checked into a station and bikes checked out of the same station. Positive
+          values indicate that more bikes are being checked out of a station than checked into it. Inversely, Negative values
+          indicate that more bikes are being checked out of a station than into it. Ideally, the discrepancy should be 0
+          so that the the bikes do not have to be rebalanced. Because the values are not zero, bikes must be balanced by
+          moving them from negative discrepancy stations to positive discrepancy stations.</p>
+        <div class="spacer"></div>
+
+        <p>
+          <strong>Average Distance Between Pickup and Dropoff Stations</strong>
+        </p>
+
+        <div class="hidden">
+          <canvas id="myChart3" width="400" height="100" aria-label="lbl" role="img">
+            <p>Your browser does not support HTML canvas</p>
+          </canvas>
+        </div>
+        <p>The mean distance traveled by passholder type is quite different for each type. This is caused by the fact that each
+          pass is used by a different type of rider. Very casual riders will use the Walk-Up pass whereas people with the monthly
+          or pass will likely be using the bike more often to commute. </p>
+        <div class="spacer"></div>
+
+        <p>
+          <strong>Usage Statistics</strong>
+        </p>
+
+        <p>According to <a href="https://bikeshare.metro.net/about/data/">Bikeshare Metro</a>, 582,309 bike rides have been taken and 44,426 passes have been sold. These passes are generally used by commuters</p>
+        <div class="spacer"></div>
+
+      </div>
+
+    </div>
+  </section>
+  <!-- /.section -->
+
+  <div style="padding-bottom: 100px"></div>
+  <script src="./Files/main.js"></script>
+</body>
+
+</html>
